@@ -20,7 +20,7 @@
 ```python
 class AError(Exception): pass
 class BError(AError): pass
-class CError(CError): pass
+class CError(BError): pass
 
 print(issubclass(CError, AError)) # (1)
 print(issubclass(AError, CError)) # (2)
