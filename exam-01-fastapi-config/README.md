@@ -53,7 +53,7 @@ except AError:
 - `GET /about`-> `{"service": "study", "version": "0.1.0"}`
 
 ### B2. `q2_config.py` - 설정 검사기
-`condif.py`에서 배운 것을 응용한다.
+`config.py`에서 배운 것을 응용한다.
 
 1. 예외 클래스 2개: `StudyError`(Exception 상속), `studyConfigError`(StudyError 상속)
 2. frozen dataclass `StudyConfig`: 필드 `name:str`, `port:int`, `token:stk`
