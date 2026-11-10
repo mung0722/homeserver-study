@@ -61,7 +61,7 @@ except AError:
 3. `load_study_config(env)` 규칙 - 어기면 전부 `StudyConfigError`
     1. `STUDY_NAME`, `STUDY_PORT`, `STUDY_TOKEN`중 없거나 빈 것이 있으면 -> 빠진 **이름을 모두** 메시지에
     2. `STUDY_PORT`가 숫자가 아니면 -> 메시지에 `STUDY_PORT` 포함
-    3. 포스가 `1024`보다 작거나 `65535`보다 크면 -> 메시지에 `STUDY_PORT` 포함 (1024와 65535는 **허용**)
+    3. 포트가 `1024`보다 작거나 `65535`보다 크면 -> 메시지에 `STUDY_PORT` 포함 (1024와 65535는 **허용**)
     4. `STUDY_TOKEN`이 8자 미만이면 -> 메시지에 `STUDY_TOKEN` 포함, **토큰 값은 노출 금지**
     5. 통과하면 `port`는 **정수로 변환해서** 담아 돌려준다.
 > 새 도구 2개
