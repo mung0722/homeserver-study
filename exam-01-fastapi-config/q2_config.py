@@ -14,7 +14,7 @@ REQUIRED = ["STUDY_NAME", "STUDY_PORT", "STUDY_TOKEN"]
 #           필드: name(str), port(int), token(str, repr에서 숨김)
 
 def load_study_config(env: Mapping[str,str]) -> "StudyConfig":
-    # (반환 타입에 따옴초를 친 이유: 처음엔 StudyConfig가 아직 없으니
+    # (반환 타입에 따옴표를 친 이유: 처음엔 StudyConfig가 아직 없으니
     # "나중에 정의될 이름"이라고 문자열로 적어 둔 것)
 
     # TODO 4: 규칙 1. 빠진 값 검사
