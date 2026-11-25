@@ -18,16 +18,37 @@ from datetime import datetime
 def find_by_borrower(conn, name: str) -> list[str]:
     # TODO 1: name을 ? 자리로 넘겨서 그 사람이 빌린 책의 title만 꺼낸다.
     #         id 작은 것부터. SQL은 한 줄에 한 절씩.
+    cursor = conn.execute(
+        """
+        SELECT title
+        FROM loans
+        WHERE borrower = ?
+        ORDER BY id
+        """,
+        (name,),
+    )
 
     # TODO 2: 꺼낸 줄마다 row["title"]을 새 리스트에 담아 돌려준다. (for / append)
-    pass  # 코드 작성 후 삭제
+    title = []
+    for row in cursor:
+        title.append(row["title"])
+
+    return title
+    # pass  # 코드 작성 후 삭제
+
 
 
 def hours_between(start_iso: str, end_iso: str) -> float:
     # TODO 3: 두 글자를 각각 날짜 객체로 바꾼다.
+    start = datetime.fromisoformat(start_iso)
+    end = datetime.fromisoformat(end_iso)
 
     # TODO 4: 끝 - 시작 = 걸린 시간(timedelta)
+    elapsed = end - start
 
     # TODO 5: 걸린 시간을 '시간' 단위 숫자로 바꾸고 (힌트: 초 / 3600)
     #         소수 첫째 자리까지 반올림해서 돌려준다.
-    pass  # 코드 작성 후 삭제
+    hours = elapsed.total_seconds() / 3600
+    return round(hours, 1)
+
+    # pass  # 코드 작성 후 삭제

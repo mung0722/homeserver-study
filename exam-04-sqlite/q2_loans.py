@@ -18,38 +18,127 @@ def now_kst() -> datetime:
 
 class LoanBook:
     def __init__(self, db_path):
-        # TODO 1: db_path를 Path 객체로 바꿔 속성 db_path에 저장한다.
+        # TODO 1: db_path를 Path 객체로 바꿔 속성 db_path에 저장한다
+        self.db_path = Path(db_path)
 
         # TODO 2: DB 파일이 들어갈 폴더를 만든다. (중간 폴더까지, 이미 있으면 그냥 넘어가기)
+        self.db_path.parent.mkdir(parents=True, exist_ok=True)
 
         # TODO 3: open_db로 연결을 열고 create_table로 표를 만든다.
-        pass  # 코드 작성 후 삭제
+        with open_db(self.db_path) as conn:
+            create_table(conn)
+        # pass  # 코드 작성 후 삭제
 
     def borrow(self, title: str, borrower: str) -> int:
         # TODO 4: borrowed_at = 지금 시각(ISO 글자)
         #         INSERT로 title, borrower, borrowed_at만 넣는다. (값은 모두 ? 로)
         #         lastrowid를 받고, None이면 RuntimeError를 던진다.
         #         그 id를 돌려준다.
-        pass  # 코드 작성 후 삭제
+        borrowed_at = now_kst().isoformat()
+
+        with open_db(self.db_path) as conn:
+            cursor = conn.execute(
+                """
+                INSERT INTO loans (
+                    title,
+                    borrower,
+                    borrowed_at
+                )
+                VALUES (?,?,?)
+                """,
+                (title,
+                 borrower,
+                 borrowed_at),
+            )
+            loan_id = cursor.lastrowid
+            if loan_id is None:
+                raise RuntimeError("새 실행 기록을 번호를 받지 못함")
+            return loan_id
+        # pass  # 코드 작성 후 삭제
 
     def get(self, loan_id: int) -> dict | None:
         # TODO 5: 그 id의 줄을 하나 꺼낸다.
         #         없으면 None, 있으면 진짜 딕셔너리로 바꿔서 돌려준다.
-        pass  # 코드 작성 후 삭제
+        with open_db(self.db_path) as conn:
+            cursor = conn.execute(
+                """
+                SELECT *
+                FROM loans
+                WHERE id = ?
+                """,
+                (loan_id,),
+            )
+
+            row = cursor.fetchone()
+
+        if row is None:
+            return None
+        return dict(row)
+        # pass  # 코드 작성 후 삭제
 
     def return_book(self, loan_id: int) -> bool:
         # TODO 6: '그 id' 이면서 '아직 반납 안 된' 줄만 returned_at을 지금 시각으로 고친다.
         #         (힌트: WHERE ... AND ...)
         #         실제로 고친 줄이 있으면 True, 없으면 False
         #         (힌트: 넘겨받은 loan_id가 아니라 'DB의 대답'으로 판단한다)
-        pass  # 코드 작성 후 삭제
+        with open_db(self.db_path) as conn:
+            cursor = conn.execute(
+                """
+                UPDATE loans
+                SET
+                    returned_at = ?
+                WHERE id = ?
+                    AND returned_at IS NULL
+                """,
+                (now_kst().isoformat(), loan_id,),
+            )
+
+            changed = cursor.rowcount
+
+        return changed > 0
+        # pass  # 코드 작성 후 삭제
+    
 
     def not_returned(self) -> list[dict]:
         # TODO 7: 반납 안 된 줄 전부를 id 작은 것부터 꺼내서
         #         딕셔너리 리스트로 돌려준다. (for / append)
-        pass  # 코드 작성 후 삭제
+        with open_db(self.db_path) as conn:
+            cursor = conn.execute(
+                """
+                SELECT *
+                FROM loans
+                WHERE returned_at IS NULL
+                ORDER BY id
+                """,
+            )
+            rows = cursor.fetchall()
+
+        result = []
+        for row in rows:
+            result.append(dict(row))
+
+        return result
+            
+
+        # pass  # 코드 작성 후 삭제
 
     def latest(self, limit: int = 3) -> list[dict]:
         # TODO 8: 최근 줄을 최신순으로 최대 limit개 꺼내서
         #         딕셔너리 리스트로 돌려준다. (limit도 ? 로)
-        pass  # 코드 작성 후 삭제
+        with open_db(self.db_path) as conn:
+            cursor = conn.execute(
+                """
+                SELECT *
+                FROM loans
+                ORDER BY id DESC
+                LIMIT ?
+                """,
+                (limit,),
+            )
+            rows = cursor.fetchall()
+
+            result = []
+            for row in rows:
+                result.append(dict(row))
+            return result
+        # pass  # 코드 작성 후 삭제

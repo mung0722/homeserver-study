@@ -12,22 +12,39 @@ from contextlib import contextmanager
 #   - 열: id, title, borrower, borrowed_at, returned_at (타입/조건은 README 표 참고)
 #   - 한 줄에 열 하나씩
 CREATE_TABLE_SQL = """
+CREATE TABLE IF NOT EXISTS loans(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    borrower TEXT NOT NULL,
+    borrowed_at TEXT NOT NULL,
+    returned_at TEXT
+)
 """
 
 
 # TODO 2: 이 함수를 'with open_db(path) as conn:'으로 쓸 수 있게 만드는 장식(@...)을 붙인다.
+@contextmanager
 def open_db(path):
     # TODO 3: 연결을 연다.
+    conn = sqlite3.connect(path)
 
     # TODO 4: 행을 row["title"]처럼 열 이름으로 읽을 수 있게 설정한다.
+    conn.row_factory = sqlite3.Row
 
     # TODO 5: 아래 동작을 만든다.
     #   - 연결 객체 자체를 with에 써서 '성공 -> commit / 에러 -> rollback'
     #   - 그 안에서 바깥 with 블록에 conn을 넘겨준다 (힌트: yield)
     #   - 에러가 나든 안 나든 '반드시' 연결을 닫는다 (힌트: try / finally)
-    pass  # 코드 작성 후 삭제
+    try:
+        with conn:
+            yield conn
+    finally:
+        conn.close()
+    # pass  # 코드 작성 후 삭제
 
 
 def create_table(conn) -> None:
     # TODO 6: 받은 conn으로 CREATE_TABLE_SQL을 실행한다.
-    pass  # 코드 작성 후 삭제
+    conn.execute(CREATE_TABLE_SQL)
+
+    # pass  # 코드 작성 후 삭제
